@@ -1,10 +1,18 @@
-import { CompassIcon, HomeIcon, SparkleIcon, UserIcon } from 'lucide-react';
-import Link from 'next/link';
-import { Button } from '../ui/button';
+import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
+import {
+  CompassIcon,
+  HomeIcon,
+  LoaderIcon,
+  SparkleIcon,
+  SparklesIcon,
+} from "lucide-react";
+import Link from "next/link";
+import { Suspense } from "react";
+import { Button } from "../ui/button";
 
 const Logo = () => {
   return (
-    <Link href={'/'} className="flex items-center gap-2 group">
+    <Link href="/" className="flex items-center gap-2 group">
       <div className="size-8 rounded-lg bg-primary flex items-center justify-center">
         <SparkleIcon className="size-4 text-primary-foreground" />
       </div>
@@ -14,9 +22,7 @@ const Logo = () => {
     </Link>
   );
 };
-
-const Header = () => {
-  const isSignedIn = false;
+export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="wrapper px-12">
@@ -38,31 +44,33 @@ const Header = () => {
               <span>Explore</span>
             </Link>
           </nav>
+
           <div className="flex items-center gap-3">
-            {isSignedIn ? (
-              <>
+            <Suspense
+              fallback={
+                <div>
+                  <LoaderIcon className="size-4 animate-spin" />
+                </div>
+              }
+            >
+              <SignedOut>
+                <SignInButton />
+                <SignUpButton>
+                  <Button>Sign Up</Button>
+                </SignUpButton>
+              </SignedOut>
+              <SignedIn>
                 <Button asChild>
                   <Link href="/submit">
-                    <SparkleIcon className="size-4" />
+                    <SparklesIcon className="size-4" />
                     Submit Project
                   </Link>
                 </Button>
-                {/* Clear User */}
-                <Button variant={'ghost'}>
-                  <UserIcon className="size-4" />
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button variant={'ghost'}>Sign In</Button>
-                <Button>Sign Up</Button>
-              </>
-            )}
+              </SignedIn>
+            </Suspense>
           </div>
         </div>
       </div>
     </header>
   );
-};
-
-export default Header;
+}
