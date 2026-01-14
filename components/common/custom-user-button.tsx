@@ -1,10 +1,29 @@
-"use client";
-import { OrganizationSwitcher, UserButton } from "@clerk/nextjs";
-import { ArrowRight, Building2Icon, BuildingIcon } from "lucide-react";
-import { Button } from "../ui/button";
-import Link from "next/link";
+'use client';
+
+import {
+  OrganizationSwitcher,
+  UserButton,
+  useUser,
+  useClerk,
+} from '@clerk/nextjs';
+import { ArrowRight, Building2Icon, BuildingIcon } from 'lucide-react';
+import { Button } from '../ui/button';
+import { useRouter } from 'next/navigation';
 
 export default function CustomUserButton() {
+  const { user, isLoaded } = useUser();
+  const { closeUserProfile } = useClerk();
+  const router = useRouter();
+
+  if (!isLoaded) return null;
+
+  const isAdmin = user?.publicMetadata?.isAdmin === true;
+
+  const goToAdmin = () => {
+    closeUserProfile();     
+    router.push('/admin');  
+  };
+
   return (
     <UserButton>
       <UserButton.UserProfilePage
@@ -15,32 +34,33 @@ export default function CustomUserButton() {
         <div className="p-4 flex-1 flex items-center justify-between">
           <h2>Manage Organization</h2>
           <OrganizationSwitcher
-            hidePersonal={true}
-            afterCreateOrganizationUrl={"/submit"}
-            afterSelectPersonalUrl={"/submit"}
+            hidePersonal
+            afterCreateOrganizationUrl="/submit"
+            afterSelectPersonalUrl="/submit"
             appearance={{
               elements: {
-                rootBox: "w-full",
+                rootBox: 'w-full',
               },
             }}
           />
         </div>
       </UserButton.UserProfilePage>
-      <UserButton.UserProfilePage
-        label="Admin"
-        labelIcon={<Building2Icon className="size-4" />}
-        url="admin"
-      >
-        <div className="p-4 flex-1 flex items-center justify-between">
-          <h2>Admin Panel</h2>
-          <Link href="/admin" className="w-fit justify-start">
-            <Button size="default">
+
+      {isAdmin && (
+        <UserButton.UserProfilePage
+          label="Admin"
+          labelIcon={<Building2Icon className="size-4" />}
+          url="admin"
+        >
+          <div className="p-4 flex-1 flex items-center justify-between">
+            <h2>Admin Panel</h2>
+            <Button onClick={goToAdmin}>
               Go to Admin Panel
-              <ArrowRight/>
+              <ArrowRight className="ml-2 size-4" />
             </Button>
-          </Link>
-        </div>
-      </UserButton.UserProfilePage>
+          </div>
+        </UserButton.UserProfilePage>
+      )}
     </UserButton>
   );
 }
