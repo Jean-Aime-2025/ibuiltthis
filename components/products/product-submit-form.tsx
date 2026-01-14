@@ -2,7 +2,7 @@
 
 import { FormField } from "@/components/forms/form-field";
 import { Button } from "@/components/ui/button";
-import { addProduct } from "@/lib/products/product-actions";
+import { addProductAction } from "@/lib/products/product-actions";
 import { cn } from "@/lib/utils";
 import { FormState } from "@/types";
 import { Loader2Icon, SparklesIcon } from "lucide-react";
@@ -16,7 +16,7 @@ const initialState: FormState = {
 
 export default function ProductSubmitForm() {
   const [state, formAction, isPending] = useActionState(
-    addProduct,
+    addProductAction,
     initialState
   );
 
@@ -33,7 +33,7 @@ export default function ProductSubmitForm() {
           className={cn(
             "p-4 rounded-lg border",
             success
-              ? "bg-primary/10 border-primary text-primary"
+              ? "bg-green-600/10 border-green-600 text-green-600"
               : "bg-destructive/10 border-destructive text-destructive"
           )}
           role="alert"
